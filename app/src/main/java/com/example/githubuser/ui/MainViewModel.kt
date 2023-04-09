@@ -1,59 +1,26 @@
 package com.example.githubuser.ui
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.githubuser.GithubResponse
-import com.example.githubuser.ItemsItem
-import com.example.githubuser.data.remote.retrofit.ApiConfig
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.githubuser.data.FavoriteUserRepository
+import com.example.githubuser.data.local.entity.FavoriteUser
 
-class MainViewModel: ViewModel() {
+class MainViewModel(private val favoriteUserRepository: FavoriteUserRepository) :
+    ViewModel() {
+    fun getUser() = favoriteUserRepository.getUser()
 
-    private val _user = MutableLiveData<List<ItemsItem>>()
-    val user : LiveData<List<ItemsItem>> = _user
+    fun getUserByUsername(username: String) = favoriteUserRepository.getUserByUsername(username)
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading : LiveData<Boolean> = _isLoading
+    fun getFBookmarkedUser() = favoriteUserRepository.getBookmarkedUser()
 
-    init {
-        findUser(USERNAME)
+    fun searchBookmarkedByUsername(user: String) =
+        favoriteUserRepository.searchBookmarkedByUsername(user)
+
+    fun saveFUser(fUser: FavoriteUser) {
+        favoriteUserRepository.setBookmarkedFUser(fUser, true)
     }
 
-    private fun findUser(key: String){
-        _isLoading.value = true
-        val client = ApiConfig.getApiService().getUsers(key)
-        client.enqueue(object : Callback<GithubResponse> {
-            override fun onResponse(
-                call: Call<GithubResponse>,
-                response: Response<GithubResponse>
-            ){
-                _isLoading.value = false
-                if(response.isSuccessful){
-                    val responseBody = response.body()
-                    if(responseBody !=null)
-                    {
-                        _user.value = response.body()?.items
-                    }else{
-                        Log.e(TAG,"onFailure: ${response.message()}")
-                    }
-                }
-            }
-            override fun onFailure(call: Call<GithubResponse>, t:Throwable){
-                _isLoading.value = false
-                Log.e(TAG,"onFailure: ${t.message}")
-            }
-        })
-    }
-    fun searchUser(key: String){
-        findUser(key)
+    fun deleteFUser(fUser: FavoriteUser) {
+        favoriteUserRepository.setBookmarkedFUser(fUser, false)
     }
 
-    companion object{
-        private const val TAG = ".MainViewModel"
-        var USERNAME = "type:username"
-    }
 }

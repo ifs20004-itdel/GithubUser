@@ -8,11 +8,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.githubuser.databinding.UserListBinding
 
-class UserAdapter(private val userList:List<String>, private val imgAvatar:List<String>): RecyclerView.Adapter<UserAdapter.ViewHolder>() {
+class UserAdapter(private val userList: List<String>, private val imgAvatar: List<String>) :
+    RecyclerView.Adapter<UserAdapter.ViewHolder>() {
 
     private lateinit var onItemClickCallback: OnItemClickCallback
 
-    fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback){
+    fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback) {
         this.onItemClickCallback = onItemClickCallback
     }
 
@@ -36,12 +37,12 @@ class UserAdapter(private val userList:List<String>, private val imgAvatar:List<
         return userList.size
     }
 
-    interface OnItemClickCallback{
-        fun onItemClicked(data:String)
+    interface OnItemClickCallback {
+        fun onItemClicked(data: String)
     }
 
-    class ViewHolder(private val binding: UserListBinding): RecyclerView.ViewHolder(binding.root){
-        val tvUsername : TextView = binding.tvUsername
-        val imgAvatar : ImageView = binding.imgUserAvatar
+    class ViewHolder(private val binding: UserListBinding) : RecyclerView.ViewHolder(binding.root) {
+        val tvUsername: TextView = binding.tvUsername
+        val imgAvatar: ImageView = binding.imgUserAvatar
     }
 }

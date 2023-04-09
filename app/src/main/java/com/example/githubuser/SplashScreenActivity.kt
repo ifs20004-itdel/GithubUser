@@ -15,11 +15,12 @@ class SplashScreenActivity : AppCompatActivity() {
 
         supportActionBar?.hide()
 
-        Handler().postDelayed({
-            val intent = Intent(this@SplashScreenActivity, BottomNavigationActivity::class.java)
-            startActivity(intent)
-            finish()
-        },2000
+        Handler().postDelayed(
+            {
+                val intent = Intent(this@SplashScreenActivity, BottomNavigationActivity::class.java)
+                startActivity(intent)
+                finish()
+            }, 2000
         )
     }
 }

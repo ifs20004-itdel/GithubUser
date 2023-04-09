@@ -10,8 +10,8 @@
     android:layout_marginTop="4dp"
     android:layout_marginEnd="4dp"
     android:layout_marginBottom="4dp"
-    card_view:cardCornerRadius="4dp"
-    >
+    card_view:cardCornerRadius="4dp">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/user_list"
         android:layout_width="match_parent"
@@ -26,8 +26,7 @@
             card_view:layout_constraintBottom_toBottomOf="parent"
             card_view:layout_constraintStart_toStartOf="parent"
             card_view:layout_constraintTop_toTopOf="parent"
-            tools:src="@tools:sample/avatars"
-            />
+            tools:src="@tools:sample/avatars" />
 
         <TextView
             android:id="@+id/tvUsername"
@@ -42,8 +41,7 @@
             card_view:layout_constraintStart_toEndOf="@+id/img_user_avatar"
             card_view:layout_constraintTop_toTopOf="@+id/img_user_avatar"
             card_view:layout_constraintBottom_toBottomOf="parent"
-            tools:text="@string/username"
-            />
+            tools:text="@string/username" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

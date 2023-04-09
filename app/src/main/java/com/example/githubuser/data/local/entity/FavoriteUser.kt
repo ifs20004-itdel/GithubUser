@@ -7,16 +7,14 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Entity
-@Parcelize
-class FavoriteUser (
+class FavoriteUser(
     @PrimaryKey(autoGenerate = false)
     @field:ColumnInfo(name = "username")
-    var username : String = "",
+    var username: String = "",
 
     @field:ColumnInfo(name = "avatarUrl")
     var avatarUrl: String? = null,
 
     @field:ColumnInfo(name = "bookmarked")
     var isBookmarked: Boolean
-
-    ):Parcelable
+)

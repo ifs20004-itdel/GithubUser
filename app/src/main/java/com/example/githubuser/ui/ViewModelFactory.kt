@@ -6,24 +6,22 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.githubuser.data.FavoriteUserRepository
 import com.example.githubuser.di.Injection
 
-class ViewModelFactory private constructor(private val favoriteUserRepository: FavoriteUserRepository):
-    ViewModelProvider.NewInstanceFactory()
-{
+class ViewModelFactory private constructor(private val favoriteUserRepository: FavoriteUserRepository) :
+    ViewModelProvider.NewInstanceFactory() {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if(modelClass.isAssignableFrom(FavoriteUserViewModel::class.java)){
-            return FavoriteUserViewModel(favoriteUserRepository) as T
-//            return super.create(modelClass)
+        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+            return MainViewModel(favoriteUserRepository) as T
         }
-        throw IllegalArgumentException("Unknown ViewModel class: "+ modelClass.name)
+        throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
     }
 
-    companion object{
+    companion object {
         @Volatile
         private var instance: ViewModelFactory? = null
-        fun getInstance(context:Context):ViewModelFactory =
-            instance?: synchronized(this){
-                instance?: ViewModelFactory(Injection.provideRepository(context))
+        fun getInstance(context: Context): ViewModelFactory =
+            instance ?: synchronized(this) {
+                instance ?: ViewModelFactory(Injection.provideRepository(context))
             }.also { instance = it }
     }
 }

@@ -22,8 +22,9 @@ class FollowFragment : Fragment() {
             ViewModelProvider.NewInstanceFactory()
         )[FollowViewModel::class.java]
     }
+
     private var position = 1
-    private var username : String? = ""
+    private var username: String? = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,12 +32,12 @@ class FollowFragment : Fragment() {
     ): View {
         binding = FragmentFollowBinding.inflate(inflater, container, false)
 
-        followViewModel().isLoading.observe(viewLifecycleOwner){
+        followViewModel().isLoading.observe(viewLifecycleOwner) {
             showLoading(it)
         }
         val layoutManager = LinearLayoutManager(requireActivity())
         binding.rvFollow.layoutManager = layoutManager
-        val itemDecoration = DividerItemDecoration(requireContext(),layoutManager.orientation)
+        val itemDecoration = DividerItemDecoration(requireContext(), layoutManager.orientation)
         binding.rvFollow.addItemDecoration(itemDecoration)
         return binding.root
     }
@@ -55,31 +56,31 @@ class FollowFragment : Fragment() {
             position = it.getInt(ARG_POSITION)
             username = it.getString(ARG_USERNAME)
         }
-        if(position==1){
-            username?.let{
+        if (position == 1) {
+            username?.let {
                 followViewModel().getFollowerList(it)
             }
             followViewModel().followList.observe(
                 viewLifecycleOwner
-            ){
+            ) {
                 setUserFollow(it)
             }
-        }else{
-            username?.let{
+        } else {
+            username?.let {
                 followViewModel().getFollowingList(it)
             }
             followViewModel().followList.observe(
                 viewLifecycleOwner
-            ){
+            ) {
                 setUserFollow(it)
             }
         }
     }
 
-    private fun setUserFollow(listUser: List<FollowResponseItem>){
+    private fun setUserFollow(listUser: List<FollowResponseItem>) {
         val user = ArrayList<String>()
         val imageAvatar = ArrayList<String>()
-        for(i in listUser){
+        for (i in listUser) {
             user.add(
                 """
                     ${i.login}
@@ -95,20 +96,21 @@ class FollowFragment : Fragment() {
 
         binding.rvFollow.adapter = adapter
 
-        adapter.setOnItemClickCallback(object : UserAdapter.OnItemClickCallback{
+        adapter.setOnItemClickCallback(object : UserAdapter.OnItemClickCallback {
             override fun onItemClicked(data: String) {
                 showSelectedUser(data)
             }
         })
     }
-    private fun showSelectedUser(user: String){
+
+    private fun showSelectedUser(user: String) {
         val intent = Intent(view?.context, DetailUserActivity::class.java)
-        intent.putExtra(DetailUserActivity.name,user)
+        intent.putExtra(DetailUserActivity.name, user)
         startActivity(intent)
     }
 
-    companion object{
-        var  ARG_POSITION = "0"
-        var  ARG_USERNAME = "EXTRA_NAME"
+    companion object {
+        var ARG_POSITION = "0"
+        var ARG_USERNAME = "EXTRA_NAME"
     }
 }
