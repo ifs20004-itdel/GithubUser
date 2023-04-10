@@ -5,18 +5,28 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.widget.CompoundButton
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.githubuser.*
 import com.example.githubuser.data.Result
 import com.example.githubuser.data.local.entity.FavoriteUser
 import com.example.githubuser.databinding.FragmentMainBinding
-import com.example.githubuser.ui.adapter.FavoriteUserAdapter
+import com.example.githubuser.ui.adapter.MainAdapter
+import com.example.githubuser.ui.factory.ModeViewModelFactory
+import com.example.githubuser.ui.factory.ViewModelFactory
 import com.google.android.material.bottomnavigation.BottomNavigationView
+
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
@@ -30,14 +40,7 @@ class MainFragment : Fragment() {
         return viewModel
     }
 
-    private fun adapter() = FavoriteUserAdapter { favoriteUser ->
-        if (favoriteUser.isBookmarked) {
-            favoriteViewModel().deleteFUser(favoriteUser)
-        } else {
-            favoriteViewModel().saveFUser(favoriteUser)
-        }
-    }
-
+    private fun adapter() = MainAdapter()
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -46,6 +49,20 @@ class MainFragment : Fragment() {
     ): View {
         setHasOptionsMenu(true)
         _binding = FragmentMainBinding.inflate(inflater, container, false)
+        val pref = SettingPreferences.getInstance(requireContext().dataStore)
+
+        val modeViewModel = ViewModelProvider(this, ModeViewModelFactory(pref)).get(
+            ModeViewModel::class.java
+        )
+
+        modeViewModel.getThemeSettings().observe(viewLifecycleOwner) { isDarkModeActive: Boolean ->
+            if (isDarkModeActive) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        }
+
         return binding.root
     }
 
@@ -60,7 +77,7 @@ class MainFragment : Fragment() {
         }
 
         fUserAdapter.setOnItemClickCallback(object :
-            FavoriteUserAdapter.OnItemClickCallback {
+            MainAdapter.OnItemClickCallback {
             override fun onItemClicked(login: String, url: String?, bookmark: Boolean) {
                 showSelectedUser(login, url, bookmark)
             }
@@ -114,21 +131,19 @@ class MainFragment : Fragment() {
 
     private fun setUser(
         result: Result<List<FavoriteUser>>,
-        favoriteUserAdapter: FavoriteUserAdapter
+        mainAdapter: MainAdapter
     ) {
         when (result) {
             is Result.Loading -> {
                 showLoading(true)
-                binding.progressBar.visibility = View.VISIBLE
             }
             is Result.Success -> {
                 showLoading(false)
-                binding.progressBar.visibility = View.GONE
                 val fUserData = result.data
-                favoriteUserAdapter.submitList(fUserData)
+                mainAdapter.submitList(fUserData)
             }
             is Result.Error -> {
-                binding.progressBar.visibility = View.GONE
+                showLoading(false)
                 Toast.makeText(
                     context,
                     "Terjadi kesalahan: " + result.error,

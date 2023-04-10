@@ -12,7 +12,6 @@ class AppExecutors {
 
     private class MainThreadExecutor : Executor {
         private val mainThreadHandler = Handler(Looper.getMainLooper())
-
         override fun execute(p0: Runnable) {
             mainThreadHandler.post(p0)
         }

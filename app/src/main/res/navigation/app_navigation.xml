@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/navigation_setting"
-        android:name="com.example.githubuser.ui.MainFragment"
+        android:name="com.example.githubuser.ui.ModeFragment"
         android:label="@string/settings"
         tools:layout="@layout/fragment_main" />
 

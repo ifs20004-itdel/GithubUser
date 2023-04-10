@@ -1,10 +1,12 @@
-package com.example.githubuser.ui
+package com.example.githubuser.ui.factory
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.githubuser.FollowViewModel
 import com.example.githubuser.data.FavoriteUserRepository
 import com.example.githubuser.di.Injection
+import com.example.githubuser.ui.MainViewModel
 
 class ViewModelFactory private constructor(private val favoriteUserRepository: FavoriteUserRepository) :
     ViewModelProvider.NewInstanceFactory() {
@@ -12,6 +14,9 @@ class ViewModelFactory private constructor(private val favoriteUserRepository: F
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
             return MainViewModel(favoriteUserRepository) as T
+        }
+        if (modelClass.isAssignableFrom(FollowViewModel::class.java)) {
+            return FollowViewModel(favoriteUserRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
     }

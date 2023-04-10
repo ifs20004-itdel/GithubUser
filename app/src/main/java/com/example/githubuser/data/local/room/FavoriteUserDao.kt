@@ -9,6 +9,10 @@ interface FavoriteUserDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(fUser: FavoriteUser)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertList(news: List<FavoriteUser>)
+
+
     @Update
     fun update(fUser: FavoriteUser)
 
@@ -30,9 +34,6 @@ interface FavoriteUserDao {
     @Query("SELECT EXISTS(SELECT * FROM FavoriteUser WHERE username = :username AND bookmarked = 1)")
     fun searchUserBookmarkedByUsername(username: String): LiveData<Boolean>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertFavorite(news: List<FavoriteUser>)
-
-    @Query("DELETE FROM FavoriteUser WHERE bookmarked = 0")
+    @Query("DELETE FROM FavoriteUser")
     fun deleteAll()
 }

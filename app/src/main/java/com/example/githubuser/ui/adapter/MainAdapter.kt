@@ -8,11 +8,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.githubuser.data.local.entity.FavoriteUser
-import com.example.githubuser.databinding.ActivityDetailUserBinding
 import com.example.githubuser.databinding.UserListBinding
 
-class FavoriteUserAdapter(private val onBookmarkClick: (FavoriteUser) -> Unit) :
-    ListAdapter<FavoriteUser, FavoriteUserAdapter.MyViewHolder>(DIFF_CALLBACK) {
+class MainAdapter() : ListAdapter<FavoriteUser, MainAdapter.MyViewHolder>(DIFF_CALLBACK) {
 
     private lateinit var onItemClickCallback: OnItemClickCallback
 
@@ -22,26 +20,19 @@ class FavoriteUserAdapter(private val onBookmarkClick: (FavoriteUser) -> Unit) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val binding = UserListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        val detailUserBinding: ActivityDetailUserBinding? = null
-        return MyViewHolder(binding, detailUserBinding)
+        return MyViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val fUser = getItem(position)
         holder.bind(fUser)
-        holder.detailUserBinding?.fabFavorites?.setOnClickListener {
-            onItemClickCallback.onItemClicked(fUser.username, fUser.avatarUrl, fUser.isBookmarked)
-            onBookmarkClick(fUser)
-        }
         holder.itemView.setOnClickListener {
             onItemClickCallback.onItemClicked(fUser.username, fUser.avatarUrl, fUser.isBookmarked)
         }
-
     }
 
     class MyViewHolder(
-        private val binding: UserListBinding,
-        val detailUserBinding: ActivityDetailUserBinding?
+        private val binding: UserListBinding
     ) : RecyclerView.ViewHolder(
         binding.root
     ) {
@@ -66,7 +57,6 @@ class FavoriteUserAdapter(private val onBookmarkClick: (FavoriteUser) -> Unit) :
                 ): Boolean {
                     return oldUser.username == newUser.username
                 }
-
                 @SuppressLint("DiffUtilEquals")
                 override fun areContentsTheSame(
                     oldUser: FavoriteUser,

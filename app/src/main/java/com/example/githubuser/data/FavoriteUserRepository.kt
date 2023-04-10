@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.githubuser.BuildConfig
+import com.example.githubuser.FollowResponseItem
 import com.example.githubuser.GithubResponse
 import com.example.githubuser.data.local.entity.FavoriteUser
 import com.example.githubuser.data.local.room.FavoriteUserDao
@@ -20,6 +21,7 @@ class FavoriteUserRepository private constructor(
     private val appExecutors: AppExecutors
 ) {
     private val result = MediatorLiveData<Result<List<FavoriteUser>>>()
+    private val resultFollowing = MediatorLiveData<Result<List<FavoriteUser>>>()
 
     fun getUser(): LiveData<Result<List<FavoriteUser>>> {
         result.value = Result.Loading
@@ -43,7 +45,7 @@ class FavoriteUserRepository private constructor(
                             favorites.add(favoriteUser)
                         }
                         fUserDao.deleteAll()
-                        fUserDao.insertFavorite(favorites)
+                        fUserDao.insertList(favorites)
                     }
                 }
             }
@@ -82,7 +84,7 @@ class FavoriteUserRepository private constructor(
                             favorites.add(favoriteUser)
                         }
                         fUserDao.deleteAll()
-                        fUserDao.insertFavorite(favorites)
+                        fUserDao.insertList(favorites)
                     }
                 }
             }
@@ -96,6 +98,82 @@ class FavoriteUserRepository private constructor(
         result.addSource(localData) { newData: List<FavoriteUser> ->
             result.value = Result.Success(newData)
         }
+        return result
+    }
+
+    fun getUserFollowing(username: String): LiveData<Result<List<FavoriteUser>>> {
+        resultFollowing.value = Result.Loading
+        val client = apiService.getFollowing(username)
+        client.enqueue(object : Callback<List<FollowResponseItem>> {
+            override fun onResponse(
+                call: Call<List<FollowResponseItem>>,
+                response: Response<List<FollowResponseItem>>
+            ) {
+                if (response.isSuccessful) {
+                    val items = response.body()
+                    val favorites = ArrayList<FavoriteUser>()
+                    appExecutors.diskIO.execute {
+                        items?.forEach { item ->
+                            val isFavorite = fUserDao.isfUserBookmarked(item.login)
+                            val favoriteUser = FavoriteUser(
+                                item.login,
+                                item.avatarUrl,
+                                isFavorite
+                            )
+                            favorites.add(favoriteUser)
+                        }
+                        fUserDao.deleteAll()
+                        fUserDao.insertList(favorites)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<List<FollowResponseItem>>, t: Throwable) {
+                resultFollowing.value = Result.Error(t.message.toString())
+            }
+        })
+        val localData = fUserDao.getUser()
+        resultFollowing.addSource(localData) { newData: List<FavoriteUser> ->
+            resultFollowing.value = Result.Success(newData)
+        }
+        return resultFollowing
+    }
+
+    fun getUserFollower(username: String): LiveData<Result<List<FavoriteUser>>> {
+        result.value = Result.Loading
+        val client = apiService.getFollowers(username)
+        client.enqueue(object : Callback<List<FollowResponseItem>> {
+            override fun onResponse(
+                call: Call<List<FollowResponseItem>>,
+                response: Response<List<FollowResponseItem>>
+            ) {
+                if (response.isSuccessful) {
+                    val items = response.body()
+                    val favorites = ArrayList<FavoriteUser>()
+                    appExecutors.diskIO.execute {
+                        items?.forEach { item ->
+                            val isFavorite = fUserDao.isfUserBookmarked(item.login)
+                            val favoriteUser = FavoriteUser(
+                                item.login,
+                                item.avatarUrl,
+                                isFavorite
+                            )
+                            favorites.add(favoriteUser)
+                        }
+                        fUserDao.deleteAll()
+                        fUserDao.insertList(favorites)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<List<FollowResponseItem>>, t: Throwable) {
+                result.value = Result.Error(t.message.toString())
+            }
+        })
+//        val localData = fUserDao.getUser()
+//        result.addSource(localData) { newData: List<FavoriteUser> ->
+//            result.value = Result.Success(newData)
+//        }
         return result
     }
 
@@ -113,7 +191,6 @@ class FavoriteUserRepository private constructor(
             fUserDao.update(user)
         }
     }
-
 
     companion object {
         var USERNAME = "type:username"

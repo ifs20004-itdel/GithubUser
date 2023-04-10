@@ -4,73 +4,23 @@ import androidx.lifecycle.ViewModel
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.githubuser.data.FavoriteUserRepository
+import com.example.githubuser.data.local.entity.FavoriteUser
 import com.example.githubuser.data.remote.retrofit.ApiConfig
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import com.example.githubuser.data.Result
 
-class FollowViewModel : ViewModel() {
+class FollowViewModel(private val favoriteUserRepository: FavoriteUserRepository) : ViewModel() {
     var username = ""
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _followList = MutableLiveData<List<FollowResponseItem>>()
-    val followList: LiveData<List<FollowResponseItem>> = _followList
+    fun getFollowingList(key: String) = favoriteUserRepository.getUserFollowing(key)
 
-    fun getFollowingList(key: String) {
-        _isLoading.value = true
-        val client = ApiConfig.getApiService().getFollowing(key)
-
-        client.enqueue(object : Callback<List<FollowResponseItem>> {
-            override fun onResponse(
-                call: Call<List<FollowResponseItem>>,
-                response: Response<List<FollowResponseItem>>
-            ) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    val responseBody = response.body()
-                    if (responseBody != null) {
-                        _followList.value = response.body()
-                    } else {
-                        Log.e(TAG, "onFailure: ${response.message()}")
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<List<FollowResponseItem>>, t: Throwable) {
-                Log.e(TAG, "onFailure: ${t.message}")
-            }
-        }
-        )
-    }
-
-    fun getFollowerList(key: String) {
-        _isLoading.value = true
-        val client = ApiConfig.getApiService().getFollowers(key)
-
-        client.enqueue(object : Callback<List<FollowResponseItem>> {
-            override fun onResponse(
-                call: Call<List<FollowResponseItem>>,
-                response: Response<List<FollowResponseItem>>
-            ) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    val responseBody = response.body()
-                    if (responseBody != null) {
-                        _followList.value = response.body()
-                    } else {
-                        Log.e(TAG, "onFailure: ${response.message()}")
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<List<FollowResponseItem>>, t: Throwable) {
-                Log.e(TAG, "onFailure: ${t.message}")
-            }
-        }
-        )
-    }
+    fun getFollowerList(key: String) = favoriteUserRepository.getUserFollower(key)
 
     companion object {
         private const val TAG = ".FollowViewModel"

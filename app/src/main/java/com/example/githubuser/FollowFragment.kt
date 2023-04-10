@@ -2,25 +2,31 @@ package com.example.githubuser
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
+import android.widget.Toast
+import androidx.fragment.app.viewModels
+import com.example.githubuser.data.Result
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.githubuser.data.local.entity.FavoriteUser
 import com.example.githubuser.databinding.FragmentFollowBinding
 import com.example.githubuser.ui.DetailUserActivity
-import com.example.githubuser.ui.adapter.UserAdapter
+import com.example.githubuser.ui.factory.ViewModelFactory
+import com.example.githubuser.ui.adapter.MainAdapter
 
 class FollowFragment : Fragment() {
     private lateinit var binding: FragmentFollowBinding
 
     private fun followViewModel(): FollowViewModel {
-        return ViewModelProvider(
-            this,
-            ViewModelProvider.NewInstanceFactory()
-        )[FollowViewModel::class.java]
+        val factory: ViewModelFactory = ViewModelFactory.getInstance(requireContext())
+        val viewModel: FollowViewModel by viewModels {
+            factory
+        }
+        return viewModel
     }
 
     private var position = 1
@@ -35,6 +41,7 @@ class FollowFragment : Fragment() {
         followViewModel().isLoading.observe(viewLifecycleOwner) {
             showLoading(it)
         }
+
         val layoutManager = LinearLayoutManager(requireActivity())
         binding.rvFollow.layoutManager = layoutManager
         val itemDecoration = DividerItemDecoration(requireContext(), layoutManager.orientation)
@@ -52,60 +59,75 @@ class FollowFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val mainAdapter = MainAdapter()
         arguments?.let {
             position = it.getInt(ARG_POSITION)
             username = it.getString(ARG_USERNAME)
         }
         if (position == 1) {
             username?.let {
-                followViewModel().getFollowerList(it)
-            }
-            followViewModel().followList.observe(
-                viewLifecycleOwner
-            ) {
-                setUserFollow(it)
+                followViewModel().getFollowerList(it).observe(viewLifecycleOwner) { result ->
+                    if (result != null) {
+                        setUserFollow(result, mainAdapter)
+                    }
+                }
             }
         } else {
             username?.let {
-                followViewModel().getFollowingList(it)
-            }
-            followViewModel().followList.observe(
-                viewLifecycleOwner
-            ) {
-                setUserFollow(it)
+                followViewModel().getFollowingList(it).observe(viewLifecycleOwner) { result ->
+                    if (result != null) {
+                        setUserFollow(result, mainAdapter)
+                    }
+                }
             }
         }
-    }
 
-    private fun setUserFollow(listUser: List<FollowResponseItem>) {
-        val user = ArrayList<String>()
-        val imageAvatar = ArrayList<String>()
-        for (i in listUser) {
-            user.add(
-                """
-                    ${i.login}
-                """.trimIndent()
-            )
-            imageAvatar.add(
-                """
-                    ${i.avatarUrl}
-                """.trimIndent()
-            )
-        }
-        val adapter = UserAdapter(user, imageAvatar)
-
-        binding.rvFollow.adapter = adapter
-
-        adapter.setOnItemClickCallback(object : UserAdapter.OnItemClickCallback {
-            override fun onItemClicked(data: String) {
-                showSelectedUser(data)
+        mainAdapter.setOnItemClickCallback(object : MainAdapter.OnItemClickCallback {
+            override fun onItemClicked(login: String, url: String?, bookmark: Boolean) {
+                showSelectedUser(login, url, bookmark)
             }
         })
+
+        binding.rvFollow.apply {
+            layoutManager = LinearLayoutManager(context)
+            val itemDecoration =
+                DividerItemDecoration(context, (layoutManager as LinearLayoutManager).orientation)
+            binding.rvFollow.addItemDecoration(itemDecoration)
+            setHasFixedSize(true)
+            adapter = mainAdapter
+        }
     }
 
-    private fun showSelectedUser(user: String) {
-        val intent = Intent(view?.context, DetailUserActivity::class.java)
+    private fun setUserFollow(
+        result: Result<List<FavoriteUser>>,
+        mainAdapter: MainAdapter
+    ) {
+        when (result) {
+            is Result.Loading -> {
+                showLoading(true)
+            }
+            is Result.Success -> {
+                showLoading(false)
+                val fUserData = result.data
+                mainAdapter.submitList(fUserData)
+            }
+            is Result.Error -> {
+                showLoading(false)
+                Toast.makeText(
+                    context,
+                    "Terjadi kesalahan: " + result.error,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    private fun showSelectedUser(user: String, url: String?, bookmarked: Boolean) {
+        val intent = Intent(activity, DetailUserActivity::class.java)
         intent.putExtra(DetailUserActivity.name, user)
+        intent.putExtra(DetailUserActivity.avatarUrl, url)
+        intent.putExtra(DetailUserActivity.bookmarked, bookmarked)
+
         startActivity(intent)
     }
 

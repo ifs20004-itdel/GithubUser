@@ -18,7 +18,6 @@ class MainViewModel(private val favoriteUserRepository: FavoriteUserRepository) 
     fun saveFUser(fUser: FavoriteUser) {
         favoriteUserRepository.setBookmarkedFUser(fUser, true)
     }
-
     fun deleteFUser(fUser: FavoriteUser) {
         favoriteUserRepository.setBookmarkedFUser(fUser, false)
     }
