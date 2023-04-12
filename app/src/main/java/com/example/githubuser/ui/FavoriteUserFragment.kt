@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.githubuser.databinding.FragmentMainBinding
 import com.example.githubuser.ui.adapter.MainAdapter
 import com.example.githubuser.ui.factory.ViewModelFactory
+import com.example.githubuser.ui.viewModel.MainViewModel
 
 class FavoriteUserFragment : Fragment() {
 
@@ -33,17 +34,15 @@ class FavoriteUserFragment : Fragment() {
         val viewModel: MainViewModel by viewModels {
             factory
         }
-
         val fUserAdapter = MainAdapter()
-
-        viewModel.getFBookmarkedUser().observe(viewLifecycleOwner) { bookmarkedFUser ->
+        viewModel.getFavoriteUser().observe(viewLifecycleOwner) { bookmarkedFUser ->
             fUserAdapter.submitList(bookmarkedFUser)
         }
 
         fUserAdapter.setOnItemClickCallback(object :
             MainAdapter.OnItemClickCallback {
-            override fun onItemClicked(login: String, url: String?, bookmark: Boolean) {
-                showSelectedUser(login, url, bookmark)
+            override fun onItemClicked(login: String, url: String?) {
+                showSelectedUser(login, url)
             }
         })
 
@@ -54,12 +53,10 @@ class FavoriteUserFragment : Fragment() {
         }
     }
 
-    private fun showSelectedUser(user: String, url: String?, bookmarked: Boolean) {
+    private fun showSelectedUser(user: String, url: String?) {
         val intent = Intent(activity, DetailUserActivity::class.java)
         intent.putExtra(DetailUserActivity.name, user)
         intent.putExtra(DetailUserActivity.avatarUrl, url)
-        intent.putExtra(DetailUserActivity.bookmarked, bookmarked)
         activity?.startActivity(intent)
     }
 }
-

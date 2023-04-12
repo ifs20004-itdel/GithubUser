@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 import com.example.githubuser.data.local.entity.FavoriteUser
 import com.example.githubuser.databinding.UserListBinding
 
-class MainAdapter() : ListAdapter<FavoriteUser, MainAdapter.MyViewHolder>(DIFF_CALLBACK) {
+class MainAdapter : ListAdapter<FavoriteUser, MainAdapter.MyViewHolder>(DIFF_CALLBACK) {
 
     private lateinit var onItemClickCallback: OnItemClickCallback
 
@@ -27,7 +27,7 @@ class MainAdapter() : ListAdapter<FavoriteUser, MainAdapter.MyViewHolder>(DIFF_C
         val fUser = getItem(position)
         holder.bind(fUser)
         holder.itemView.setOnClickListener {
-            onItemClickCallback.onItemClicked(fUser.username, fUser.avatarUrl, fUser.isBookmarked)
+            onItemClickCallback.onItemClicked(fUser.username, fUser.avatarUrl)
         }
     }
 
@@ -45,9 +45,8 @@ class MainAdapter() : ListAdapter<FavoriteUser, MainAdapter.MyViewHolder>(DIFF_C
     }
 
     interface OnItemClickCallback {
-        fun onItemClicked(login: String, url: String?, bookmark: Boolean)
+        fun onItemClicked(login: String, url: String?)
     }
-
     companion object {
         val DIFF_CALLBACK: DiffUtil.ItemCallback<FavoriteUser> =
             object : DiffUtil.ItemCallback<FavoriteUser>() {
@@ -57,6 +56,7 @@ class MainAdapter() : ListAdapter<FavoriteUser, MainAdapter.MyViewHolder>(DIFF_C
                 ): Boolean {
                     return oldUser.username == newUser.username
                 }
+
                 @SuppressLint("DiffUtilEquals")
                 override fun areContentsTheSame(
                     oldUser: FavoriteUser,

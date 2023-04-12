@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -14,22 +13,19 @@
         android:theme="@style/Theme.GithubUser"
         tools:targetApi="31">
         <activity
-            android:process=":location"
-            android:name=".SplashScreenActivity"
-            android:exported="true">
+            android:name=".ui.SplashScreenActivity"
+            android:exported="true"
+            android:process=":location">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:process=":location"
             android:name=".ui.DetailUserActivity"
             android:exported="false"
-            android:parentActivityName=".ui.BottomNavigationActivity"
-            />
+            android:parentActivityName=".ui.BottomNavigationActivity" />
         <activity
-            android:process=":location"
             android:name=".ui.BottomNavigationActivity"
             android:exported="false" />
     </application>

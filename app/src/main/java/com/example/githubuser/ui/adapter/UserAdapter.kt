@@ -1,18 +1,15 @@
 package com.example.githubuser.ui.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.githubuser.databinding.UserListBinding
+import com.example.githubuser.R
 
-class UserAdapter(
-    private val userList: List<String>,
-    private val imgAvatar: List<String>,
-    private val bookmark: Boolean
-) :
+class UserAdapter(private val userList: List<String>, private val imgAvatar: List<String>) :
     RecyclerView.Adapter<UserAdapter.ViewHolder>() {
 
     private lateinit var onItemClickCallback: OnItemClickCallback
@@ -21,10 +18,8 @@ class UserAdapter(
         this.onItemClickCallback = onItemClickCallback
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = UserListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(view)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.user_list, parent, false))
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvUsername.text = userList[position]
@@ -35,8 +30,7 @@ class UserAdapter(
         holder.itemView.setOnClickListener {
             onItemClickCallback.onItemClicked(
                 userList[holder.adapterPosition],
-                imgAvatar[holder.absoluteAdapterPosition],
-                bookmark
+                imgAvatar[holder.absoluteAdapterPosition]
             )
         }
     }
@@ -46,11 +40,11 @@ class UserAdapter(
     }
 
     interface OnItemClickCallback {
-        fun onItemClicked(data: String, url: String, bookmark: Boolean)
+        fun onItemClicked(username: String, url: String)
     }
 
-    class ViewHolder(private val binding: UserListBinding) : RecyclerView.ViewHolder(binding.root) {
-        val tvUsername: TextView = binding.tvUsername
-        val imgAvatar: ImageView = binding.imgUserAvatar
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val tvUsername: TextView = view.findViewById(R.id.tvUsername)
+        val imgAvatar: ImageView = view.findViewById(R.id.img_user_avatar)
     }
 }

@@ -1,28 +1,28 @@
 package com.example.githubuser.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
-import com.example.githubuser.FollowViewModel
 import com.example.githubuser.R
-import com.example.githubuser.DetailUserViewModel
-import com.example.githubuser.FollowFragment
 import com.example.githubuser.data.local.entity.FavoriteUser
 import com.example.githubuser.data.remote.response.DetailResponse
 import com.example.githubuser.databinding.ActivityDetailUserBinding
 import com.example.githubuser.ui.adapter.SectionsPagerAdapter
 import com.example.githubuser.ui.factory.ViewModelFactory
+import com.example.githubuser.ui.viewModel.DetailUserViewModel
+import com.example.githubuser.ui.viewModel.FollowViewModel
+import com.example.githubuser.ui.viewModel.MainViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
 class DetailUserActivity : AppCompatActivity() {
     private var binding: ActivityDetailUserBinding? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailUserBinding.inflate(layoutInflater)
@@ -43,9 +43,9 @@ class DetailUserActivity : AppCompatActivity() {
 
         val newName = intent.getStringExtra(name)
         val url = intent.getStringExtra(avatarUrl)
-        val bookmark = intent.getBooleanExtra(bookmarked, true)
 
         val sectionsPagerAdapter = SectionsPagerAdapter(this)
+
         var data: DetailResponse?
         if (newName != null) {
             userDetailViewModel.getUserDetail(newName) { userDetail ->
@@ -56,8 +56,10 @@ class DetailUserActivity : AppCompatActivity() {
             }
             followViewModel.username = newName
             val ivBookmark = binding?.fabFavorites
-            mainViewModel.searchBookmarkedByUsername(newName).observe(this) {
+            var isFavorite = true
+            mainViewModel.searchFavoriteByUsername(newName).observe(this) {
                 if (it) {
+                    isFavorite = true
                     ivBookmark?.setImageDrawable(
                         ContextCompat.getDrawable(
                             ivBookmark.context,
@@ -65,6 +67,7 @@ class DetailUserActivity : AppCompatActivity() {
                         )
                     )
                 } else {
+                    isFavorite = false
                     ivBookmark?.setImageDrawable(
                         ContextCompat.getDrawable(
                             ivBookmark.context,
@@ -73,13 +76,9 @@ class DetailUserActivity : AppCompatActivity() {
                     )
                 }
             }
-            val user = FavoriteUser(newName, url, bookmark)
-            Log.e("Check", bookmark.toString())
-
+            val user = FavoriteUser(newName, url)
             binding?.fabFavorites?.setOnClickListener {
-                Log.e("Check", user.isBookmarked.toString())
-
-                if (user.isBookmarked) {
+                if (isFavorite) {
                     mainViewModel.deleteFUser(user)
                 } else {
                     mainViewModel.saveFUser(user)
@@ -95,6 +94,7 @@ class DetailUserActivity : AppCompatActivity() {
         val viewPager: ViewPager2 = findViewById(R.id.view_pager)
         viewPager.adapter = sectionsPagerAdapter
         val tabs: TabLayout = findViewById(R.id.tabs)
+
         TabLayoutMediator(tabs, viewPager) { tab, position ->
             tab.text = resources.getString(TAB_TITLES[position])
         }.attach()
@@ -124,6 +124,5 @@ class DetailUserActivity : AppCompatActivity() {
         )
         const val name = "Name"
         const val avatarUrl = "link"
-        const val bookmarked = "false"
     }
 }

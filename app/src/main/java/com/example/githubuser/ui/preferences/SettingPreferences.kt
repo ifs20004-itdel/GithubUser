@@ -1,4 +1,4 @@
-package com.example.githubuser.ui
+package com.example.githubuser.ui.preferences
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -16,7 +16,6 @@ class SettingPreferences private constructor(private val dataStore: DataStore<Pr
             preferences[THEME_KEY] ?: false
         }
     }
-
     suspend fun saveThemeSetting(isDarkModeActive: Boolean) {
         dataStore.edit { preferences ->
             preferences[THEME_KEY] = isDarkModeActive

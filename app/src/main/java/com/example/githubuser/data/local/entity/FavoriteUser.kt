@@ -11,8 +11,5 @@ class FavoriteUser(
     var username: String = "",
 
     @field:ColumnInfo(name = "avatarUrl")
-    var avatarUrl: String? = null,
-
-    @field:ColumnInfo(name = "bookmarked")
-    var isBookmarked: Boolean
+    var avatarUrl: String? = null
 )

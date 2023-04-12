@@ -20,7 +20,7 @@ abstract class FavoriteUserRoomDatabase : RoomDatabase() {
                 synchronized(FavoriteUserRoomDatabase::class.java) {
                     INSTANCE = Room.databaseBuilder(
                         context.applicationContext,
-                        FavoriteUserRoomDatabase::class.java, "favorite_user_database"
+                        FavoriteUserRoomDatabase::class.java, "favorite_user_db"
                     ).build()
                 }
             }

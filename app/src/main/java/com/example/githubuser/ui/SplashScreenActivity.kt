@@ -1,11 +1,11 @@
-package com.example.githubuser
+package com.example.githubuser.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import com.example.githubuser.ui.BottomNavigationActivity
+import androidx.appcompat.app.AppCompatActivity
+import com.example.githubuser.R
 
 @SuppressLint("CustomSplashScreen")
 class SplashScreenActivity : AppCompatActivity() {

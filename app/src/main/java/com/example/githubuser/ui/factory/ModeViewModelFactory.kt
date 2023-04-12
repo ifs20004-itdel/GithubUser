@@ -2,8 +2,8 @@ package com.example.githubuser.ui.factory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.githubuser.ui.ModeViewModel
-import com.example.githubuser.ui.SettingPreferences
+import com.example.githubuser.ui.preferences.SettingPreferences
+import com.example.githubuser.ui.viewModel.ModeViewModel
 
 class ModeViewModelFactory(private val pref: SettingPreferences) :
     ViewModelProvider.NewInstanceFactory() {
