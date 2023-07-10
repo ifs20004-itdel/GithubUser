@@ -43,6 +43,5 @@
             card_view:layout_constraintStart_toEndOf="@+id/img_user_avatar"
             card_view:layout_constraintTop_toTopOf="@+id/img_user_avatar"
             tools:text="@string/username" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

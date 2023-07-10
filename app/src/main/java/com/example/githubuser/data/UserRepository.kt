@@ -3,11 +3,9 @@ package com.example.githubuser.data
 import androidx.lifecycle.LiveData
 import com.example.githubuser.data.local.entity.FavoriteUser
 import com.example.githubuser.data.local.room.FavoriteUserDao
-import com.example.githubuser.data.remote.retrofit.ApiService
 import com.example.githubuser.utils.AppExecutors
 
 class UserRepository private constructor(
-    private val apiService: ApiService,
     private val fUserDao: FavoriteUserDao,
     private val appExecutors: AppExecutors
 ) {
@@ -35,12 +33,11 @@ class UserRepository private constructor(
         @Volatile
         private var instance: UserRepository? = null
         fun getInstance(
-            apiService: ApiService,
             fUserDao: FavoriteUserDao,
             appExecutors: AppExecutors,
         ): UserRepository =
             instance ?: synchronized(this) {
-                instance ?: UserRepository(apiService, fUserDao, appExecutors)
+                instance ?: UserRepository(fUserDao, appExecutors)
             }.also { instance = it }
     }
 }

@@ -33,6 +33,7 @@ class MainViewModel(private val userRepository: UserRepository) :
                 call: Call<GithubResponse>,
                 response: Response<GithubResponse>
             ) {
+                Log.e("test", "les")
                 _isLoading.value = false
                 if (response.isSuccessful) {
                     val responseBody = response.body()
@@ -43,7 +44,6 @@ class MainViewModel(private val userRepository: UserRepository) :
                     }
                 }
             }
-
             override fun onFailure(call: Call<GithubResponse>, t: Throwable) {
                 Log.e(TAG, "onFailure: ${t.message}")
             }
@@ -66,6 +66,6 @@ class MainViewModel(private val userRepository: UserRepository) :
 
     companion object {
         private const val TAG = ".MainViewModel"
-        var USERNAME = "type:username"
+        var USERNAME = "username"
     }
 }

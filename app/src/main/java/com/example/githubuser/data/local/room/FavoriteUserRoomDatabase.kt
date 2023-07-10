@@ -27,5 +27,4 @@ abstract class FavoriteUserRoomDatabase : RoomDatabase() {
             return INSTANCE as FavoriteUserRoomDatabase
         }
     }
-
 }

@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.githubuser.FollowResponseItem
+import com.example.githubuser.data.remote.response.FollowResponseItem
 import com.example.githubuser.databinding.FragmentFollowBinding
 import com.example.githubuser.ui.adapter.UserAdapter
 import com.example.githubuser.ui.factory.ViewModelFactory
